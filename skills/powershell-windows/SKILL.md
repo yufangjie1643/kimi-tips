@@ -24,9 +24,12 @@ $env:Path = "C:\Program Files\nodejs;" + $env:Path
 
 ## 2. `curl` 是 `Invoke-WebRequest` 的别名
 
-**现象**：执行 `curl -sL https://...` 报错，提示参数不匹配。
+**现象**：执行 `curl -sL https://...` 报错，提示参数不匹配。例如：
+```
+Invoke-WebRequest : 找不到与参数名 'sL' 匹配的参数
+```
 
-**原因**：PowerShell 中的 `curl` 实际上是 `Invoke-WebRequest` 的别名，参数完全不同。
+**原因**：PowerShell 中的 `curl` 实际上是 `Invoke-WebRequest` 的别名，参数完全不同。`-sL` 是 Linux curl 的参数（silent + follow redirects），但 `Invoke-WebRequest` 不认识这些参数。
 
 **解决**：使用 `curl.exe` 调用真正的 curl：
 ```powershell
@@ -37,6 +40,12 @@ curl.exe -sL https://raw.githubusercontent.com/.../README.md
 ```powershell
 Invoke-WebRequest -Uri "https://..." -OutFile "file.md"
 ```
+
+> 💡 完整命令示例（带代理）：
+> ```powershell
+> $env:HTTP_PROXY="http://127.0.0.1:7890"; $env:HTTPS_PROXY="http://127.0.0.1:7890"
+> curl.exe -sL https://raw.githubusercontent.com/owner/repo/main/README.md
+> ```
 
 ---
 

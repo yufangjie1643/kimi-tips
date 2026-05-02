@@ -76,13 +76,24 @@ $env:HTTP_PROXY="http://127.0.0.1:7890"; $env:HTTPS_PROXY="http://127.0.0.1:7890
 
 **原因**：`gh repo view` 没有 `--readme` 参数，该命令只能查看仓库概览信息。
 
-**解决**：直接用 curl 获取 raw README：
+**解决**：
+
+**方法 1：先 clone 仓库到本地查看**（推荐，如果后续需要操作代码）
+```powershell
+gh repo clone owner/repo
+cd repo
+cat README.md
+```
+
+**方法 2：用 curl 直接获取 raw README**（适合只想快速查看内容，不想下载整个仓库）
 ```powershell
 $env:HTTP_PROXY="http://127.0.0.1:7890"; $env:HTTPS_PROXY="http://127.0.0.1:7890"
 curl.exe -sL https://raw.githubusercontent.com/owner/repo/main/README.md
 ```
 
-或者使用 GitHub API：
+> ⚠️ PowerShell 中必须用 `curl.exe`，因为 `curl` 是 `Invoke-WebRequest` 的别名，不支持 `-sL` 参数。
+
+**方法 3：使用 GitHub API**
 ```powershell
 $env:HTTP_PROXY="http://127.0.0.1:7890"; $env:HTTPS_PROXY="http://127.0.0.1:7890"
 gh api repos/owner/repo/contents/README.md --jq '.content' | base64 -d
